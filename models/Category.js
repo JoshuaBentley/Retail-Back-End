@@ -13,30 +13,10 @@ Category.init(
       primaryKey: true,
       autoIncrement: true
     },
-    short_Sleeve: {
+    category_name: {
       type: DataTypes.STRING,
       allowNull: false
-    },
-    long_Sleeve: {
-      type: DataTypes.STRING,
-      allowNull: false
-    },
-    graphiic_Tee: {
-      type: DataTypes.STRING,
-      allowNull: false
-    },
-    shorts: {
-      type: DataTypes.STRING,
-      allowNull: falase
-    },
-    jeans: {
-      type: DataTypes.STRING, 
-      allowNull: falase
-    },
-    outer_wear: {
-      type: DataTypes.STRING,
-      allowNull: false
-    }
+    } 
   },
   {
     sequelize,

@@ -16,6 +16,7 @@ Product.init(
       autoIncrement: false,
       primaryKey: true
     },
+     
     
   },
   {
