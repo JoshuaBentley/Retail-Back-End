@@ -8,9 +8,9 @@ router.get('/', async (req, res) => {
     const inventoryData = await Category.findAll({
       include: [{ model: Products}]
     });
-    res.status(200).json(inventoryData)  
+    res.status(200).json(inventoryData);  
   } catch (err) {
-    res.status(500).json(err)
+    res.status(500).json(err);
   }
 });
 
@@ -25,9 +25,9 @@ router.get('/:id', async (req, res) => {
       return 
     }
 
-    res.status(200).json(categoryById)
+    res.status(200).json(categoryById);
   } catch (err) {
-    res.status(500 ).json(err)
+    res.status(500 ).json(err);
   }
 });
 
