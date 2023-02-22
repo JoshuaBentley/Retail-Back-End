@@ -6,7 +6,7 @@ const { Tag, Products, ProductTag } = require('../../models');
 router.get('/', async (req, res) => {
   try{
     const allTag = await Tag.findAll({
-     include: [{model: Products}, {model: ProductTag}] 
+     include: [{model: Products, through: ProductTag, as: 'Products'}] 
     })
     res.status(200).json(allTag)
    } catch (err) {
@@ -17,10 +17,16 @@ router.get('/', async (req, res) => {
 router.get('/:id', async (req, res) => {
   try{
     const TagById = await Tag.findByPk(req.params.id, {
-      include: [{model: Products}, {model: ProductTag}]
+      include: [
+        {
+          model: Products, 
+          through: ProductTag,
+          as: 'products'
+        }
+      ]
       })
-      if(!deleteTag){
-      res.status(404).json('No Tag with this id to delete')
+      if(!TagById){
+      res.status(404).json('No Tag with this id to exsists')
   }
   res.status(200).json(TagById)
 } catch(err) {
@@ -28,20 +34,23 @@ router.get('/:id', async (req, res) => {
 }
 });
 
-router.post('/', (req, res) => {
+router.post('/',  (req, res) => {
   Tag.create(req.body)
     .then((Tag) => { 
   if (req.body.tagIds.length) {
-    const tagIdArr = req.body.tagIds.map((tag_id) => {
+    const tagIdArr =  req.body.tagIds.map((tag_id) => {
       return {
         Tag_id: Tag.id,
         tag_id,
       };
     });
-    return Tag.bulkCreate(tagIdArr);
+    return Tag.bulkCreate(tagIdArr).catch((err) => {
+      console.log(err)
+      res.status(400).json(err)
+    });
   }
   // if no Tag tags, just respond
-  res.status(200).json(product);
+  res.status(200).json(Tag);
 })
 .then((tagIds) => res.status(200).json(tagIds))
 .catch((err) => {
@@ -50,14 +59,80 @@ router.post('/', (req, res) => {
 });
 });
 
-router.put('/:id', (req, res) => {
-  // update a tag's name by its `id` value
+router.put('/:id', async (req, res) => {
+  try{
+    const allTag = await Tag.findAll({
+      include: [
+        {
+          model: Product,
+          through: ProductTag,
+          as: 'products'
+        }
+      ]
+    })
+    res.status(200).json(allTag)
+  } catch (err) {
+    res.status(500).json(err)
+  }
+});
+
+router.get('/:id', async (req, res) => {
+  try{
+    const TagById = await Tag.findByPk(req.params.id, {
+      include: [
+        {
+          model: Product,
+          through: ProductTag,
+          as: 'products'
+        },
+        {
+          model: ProductTag,
+          include: {
+            model: Products
+          }
+        }
+      ]
+    })
+    if(!TagById){
+      res.status(404).json('No Tag with this id to delete');
+    }
+    res.status(200).json(TagById)
+  } catch(err) {
+    res.status(500).json(err)
+  }
+});
+
+router.post('/', (req, res) => {
+  Tag.create(req.body)
+    .then((Tag) => { 
+      if (req.body.tagIds.length) {
+        const tagIdArr = req.body.tagIds.map((tag_id) => {
+          return {
+            Tag_id: Tag.id,
+            tag_id,
+          };
+        });
+        return Tag.bulkCreate(tagIdArr).catch((err) => {
+          console.log(err);
+          res.status(400).json(err);
+        });
+      }
+      // if no Tag tags, just respond
+      res.status(200).json(Tag);
+    })
+    .then((tagIds) => res.status(200).json(Tag))
+
+
+
+
 });
 
 router.delete('/:id', async (req, res) => {
   try{
     const deleteTag = await Tag.destroy(req.params.id, { 
-      include: [{model: Category}]
+     where: {
+      id: req.params.id
+     } 
     })
     
   res.status(200).json(deleteTag)
