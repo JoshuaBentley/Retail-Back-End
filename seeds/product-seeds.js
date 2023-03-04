@@ -1,4 +1,4 @@
-const { Products } = require('../models');
+const { Product } = require('../models');
 
 const productData = [
   {
@@ -33,6 +33,6 @@ const productData = [
   },
 ];
 
-const seedProducts = () => Products.bulkCreate(productData);
+const seedProduct = () => Product.bulkCreate(productData);
 
-module.exports = seedProducts;
+module.exports = seedProduct;

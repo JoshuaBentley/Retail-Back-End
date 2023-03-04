@@ -1,15 +1,15 @@
 const router = require('express').Router();
-const { Products, Category, Tag, ProductTag } = require('../../models');
+const { Product, Category, Tag, ProductTag } = require('../../models');
 
-// The `/api/products` endpoint
+// The `/api/product` endpoint
 
-// get all products
+// get all product
 router.get('/',  async (req, res) => {
   try{
-    const allProducts = await Products.findAll({
+    const allProduct = await Product.findAll({
      include: [{model: Tag, through: Category, as: 'Tag'}] 
     })
-    res.status(200).json(allProducts)
+    res.status(200).json(allProduct)
    } catch (err) {
     res.status(500).json(err)
    }
@@ -18,8 +18,8 @@ router.get('/',  async (req, res) => {
 // get one product
 router.get('/:id', async (req, res) => {
   try{
-    const productById = await Products.findByPk(req.params.id, {
-      include: [{model: Category, through: Tag, as: 'Category'}]
+    const productById = await Product.findByPk(req.params.id, {
+      include: [{model: Category}]
       })
       if(!deleteProduct){
       res.status(404).json('No product with this id to delete')
@@ -40,7 +40,7 @@ router.post('/', (req, res) => {
       tagIds: [1, 2, 3, 4]
     }
   */
-  Products.create(req.body)
+  Product.create(req.body)
     .then((product) => {
       // if there's product tags, we need to create pairings to bulk create in the ProductTag model
       if (req.body.tagIds.length) {
@@ -65,7 +65,7 @@ router.post('/', (req, res) => {
 // update product
 router.put('/:id', (req, res) => {
   // update product data
-  Products.update(req.body, {
+  Product.update(req.body, {
     where: {
       id: req.params.id,
     },
@@ -106,7 +106,7 @@ router.put('/:id', (req, res) => {
 
 router.delete('/:id', async(req, res) => {
   try{
-    const deleteProduct = await Products.destroy(req.params.id, { 
+    const deleteProduct = await Product.destroy(req.params.id, { 
       where: {
         include: [{model: Category}]
       }  
